@@ -84,3 +84,12 @@ when 'mac_os_x'
   default['sshd']['sshd_config']['UsePrivilegeSeparation'] = 'sandbox'
   default['sshd']['sshd_config']['X11Forwarding'] = 'no'
 end
+
+# Due to a bug in Chef, we need to manually set the provider to Upstart for Ubuntu 13.10 and 14.04
+# This will probably be fixed in chef-client 11.14
+default['sshd']['init_system'] = if node['platform'] == 'ubuntu' && node['platform_version'] >= '13.10' && node['platform_version'] < '16.04'
+  Chef::Provider::Service::Upstart
+else
+  # Use the default (The default init system depends on the platform and version)
+  nil
+end
